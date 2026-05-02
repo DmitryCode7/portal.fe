@@ -5,7 +5,7 @@
     <p>
         {{ article.content }}
     </p>
-    <img :src="article.image" alt="">
+    <img :src="article.image" alt=""  height='750px' v-if="article.image";>
     
 </template>
 
@@ -36,6 +36,13 @@ import axios from 'axios';
     }
 </script>
 
-<style scoped>
-
+<style>
+    body {
+        background-image: url("https://static.vecteezy.com/system/resources/previews/023/385/832/large_2x/nature-of-green-leaf-in-garden-at-summer-natural-green-leaves-plants-using-as-spring-background-cover-page-greenery-environment-ecology-wallpaper-generate-ai-free-photo.jpg");
+        background-size: cover;
+        color: white;
+    }
+    img {
+        
+    }
 </style>
