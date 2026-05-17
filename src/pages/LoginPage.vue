@@ -1,32 +1,38 @@
 <template>
     <div class="row py-3">
         <div class="col">
-            <h1 class="text-center text-success">Вход</h1>
+            <h1 class="text-center text-primary">Вход</h1>
         </div>
     </div>
     <div class="row">
         <div class="col-4 offset-4">
-            <div class="mb-4">
+            <div
+                class="alert alert-danger mb-3"
+                v-if="error"
+            >
+                {{ error }}
+            </div>
+            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
+                <input
+                    type="email"
+                    class="form-control"
+                    id="email"
                     placeholder="name@example.com"
                     v-model="email"
                 >
             </div>
-            <div class="mb-4">
-                <label for="email" class="form-label">Пароль</label>
-                <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
-                    placeholder="*****"
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="******"
                     v-model="password"
                 >
             </div>
-            <button 
+            <button
                 class="btn btn-primary"
                 @click="onSubmit"
             >Войти</button>
@@ -35,27 +41,35 @@
 </template>
 
 <script>
-    import api from '@/api';
+import api from '@/api';
 
-    export default {
-        data() {
-            return {
-                email: '',
-                password: ''
-            };
-        },
-        methods: {
-            async onSubmit() {
+export default {
+    data() {
+        return {
+            email: '',
+            password: '',
+            error: ''
+        };
+    },
+    methods: {
+        async onSubmit() {
+            this.error = '';
+            try {
                 const response = await api.post('/login', {
                     email: this.email,
                     password: this.password
                 });
-                console.log(response.data);
+                localStorage.setItem('token',response.data.token);
+
+                this.email = '';
+                this.password = '';
+                this.$router.push('/');
+            } catch (e) {
+                if (e.status == '422') {
+                    this.error = e.response.data.message;
+                }
             }
         }
     }
+}
 </script>
-
-<style scoped>
-
-</style>

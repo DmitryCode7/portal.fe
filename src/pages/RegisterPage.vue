@@ -6,33 +6,96 @@
     </div>
     <div class="row">
         <div class="col-4 offset-4">
-            <div class="mb-4">
+            <div
+                class="alert alert-danger mb-3"
+                v-if="error"
+            >
+                {{ error }}
+            </div>
+            <div class="mb-3">
                 <label for="name" class="form-label">Имя</label>
-                <input type="text" class="form-control" id="name" placeholder="Введите имя">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="name" 
+                    placeholder="Иван"
+                    v-model="name"
+                >
             </div>
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="name@example.com">
+                <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email" 
+                    placeholder="name@example.com"
+                    v-model="email"
+                >
             </div>
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="password" class="form-label">Пароль</label>
-                <input type="password" class="form-control" id="password" placeholder="*****">
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password" 
+                    placeholder="******"
+                    v-model="password"
+                >
             </div>
-            <div class="mb-4">
-                <label for="confirm-password" class="form-label">Повторите пароль</label>
-                <input type="password" class="form-control" id="confirm-password" placeholder="*****">
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Повторите пароль</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password_confirmation" 
+                    placeholder="******"
+                    v-model="confirmationPassword"
+                >
             </div>
-            <button class="btn btn-primary">Зарегистрироваться</button>
+            <button 
+                class="btn btn-primary"
+                @click="onSubmit"
+            >Зарегистрироваться</button>
         </div>
     </div>
 </template>
 
 <script>
-    export default {
-        
+import api from '@/api';
+
+export default {
+    data() {
+        return {
+            name: '',
+            email: '',
+            password: '',
+            confirmationPassword: '',
+            error: ''
+        }
+    },
+    methods: {
+        async onSubmit() {
+            this.error = '';
+            try {
+                const response = await api.post('/register', {
+                    name: this.name,
+                    email: this.email,
+                    password: this.password,
+                    "password_confirmation": this.confirmationPassword
+                });
+                localStorage.setItem('token',response.data.token);
+
+                this.name = '';
+                this.email = '';
+                this.password = '';
+                this.confirmationPassword = '';
+                this.$router.push('/');
+            } catch (e) {
+                if (e.status == '422') {
+                    this.error = e.response.data.message;
+                }
+            }
+        }
     }
+}
 </script>
-
-<style scoped>
-
-</style>
