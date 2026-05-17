@@ -4,6 +4,8 @@ import MainPage from '@/pages/MainPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useAuthStore } from '@/stores/authStore'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -15,19 +17,40 @@ const router = createRouter({
     {
       path: '/articles/:id',
       name: 'article',
-      component: ArticlePage
+      component: ArticlePage,
+      meta: {
+        authOnly: true
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginPage
+      component: LoginPage,
+      meta: {
+        guestOnly: true
+      }
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterPage
+      component: RegisterPage,
+      meta: {
+        guestOnly: true
+      }
     }
   ],
-})
+});
+
+router.beforeEach(function (to) {
+  const authStore =useAuthStore();
+
+  if (to.meta.authOnly) {
+    if (!authStore.isAuth) {
+      return {
+        name: 'main'
+      }
+    }
+  }
+});
 
 export default router
